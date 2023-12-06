@@ -1,4 +1,4 @@
-package eu.chrost.scopedval;
+package eu.chrost.scopedvalues;
 
 public class S01Rebinding {
     private static final ScopedValue<String> X = ScopedValue.newInstance();
