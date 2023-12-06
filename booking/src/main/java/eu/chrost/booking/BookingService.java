@@ -32,10 +32,12 @@ public class BookingService {
     public String book(String destination) {
         return ScopedValue.where(requestId, UUID.randomUUID().toString()).call(() -> {
             try (var scope = new StructuredTaskScope.ShutdownOnFailure("Booking", threadFactory)) {
-                Supplier<String> there = scope.fork(() -> book(destination, THERE));
-                Supplier<String> back = scope.fork(() -> book(destination, BACK));
-                scope.join().throwIfFailed();
-                return String.join("\n",there.get(), back.get());
+                return ScopedValue.where(requestId, UUID.randomUUID().toString()).call(() -> {
+                    Supplier<String> there = scope.fork(() -> book(destination, THERE));
+                    Supplier<String> back = scope.fork(() -> book(destination, BACK));
+                    scope.join().throwIfFailed();
+                    return String.join("\n",there.get(), back.get());
+                });
             }
         });
     }
