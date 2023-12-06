@@ -26,19 +26,18 @@ public class BookingService {
     */
     private final ThreadFactory threadFactory = Thread.ofVirtual().name("booking-", 0).factory();
 
-    private final ThreadLocal<String> requestId = new ThreadLocal<>();
+    private final ScopedValue<String> requestId = ScopedValue.newInstance();
 
     @SneakyThrows
     public String book(String destination) {
-        requestId.set(UUID.randomUUID().toString());
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure("Booking", threadFactory)) {
-            Supplier<String> there = scope.fork(() -> book(destination, THERE));
-            Supplier<String> back = scope.fork(() -> book(destination, BACK));
-            scope.join().throwIfFailed();
-            return String.join("\n",there.get(), back.get());
-        } finally {
-            requestId.remove();
-        }
+        return ScopedValue.where(requestId, UUID.randomUUID().toString()).call(() -> {
+            try (var scope = new StructuredTaskScope.ShutdownOnFailure("Booking", threadFactory)) {
+                Supplier<String> there = scope.fork(() -> book(destination, THERE));
+                Supplier<String> back = scope.fork(() -> book(destination, BACK));
+                scope.join().throwIfFailed();
+                return String.join("\n",there.get(), back.get());
+            }
+        });
     }
 
     @SneakyThrows
