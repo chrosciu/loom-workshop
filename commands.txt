@@ -1,0 +1,3 @@
+jcmd <pid> Thread.print > <file>
+
+jcmd <pid> Thread.dump_to_file -format=json <file>
