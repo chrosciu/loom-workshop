@@ -1,4 +1,4 @@
-package eu.chrost.concurrency;
+package eu.chrost.structuredconcurrency;
 
 import java.util.concurrent.ThreadFactory;
 
