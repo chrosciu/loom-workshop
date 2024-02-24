@@ -10,7 +10,7 @@ public class BookingService {
     @SneakyThrows
     public String book(String destination) {
         log.info("[{}] Booking start", destination);
-        Thread.sleep(3000);
+        Thread.sleep(6000);
         log.info("[{}] Booking end", destination);
         return "Booked travel to: " + destination;
     }
