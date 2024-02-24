@@ -20,11 +20,8 @@ public class LimitedResources {
     public void blockFor(long millis) {
         var lockNum = random.nextInt(locks.length);
 
-        locks[lockNum].lock();
-        try {
+        synchronized (locks[lockNum]) {
             Thread.sleep(millis);
-        } finally {
-            locks[lockNum].unlock();
         }
     }
 }
