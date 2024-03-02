@@ -2,13 +2,13 @@ package eu.chrost.booking;
 
 import lombok.SneakyThrows;
 
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LimitedResources {
     private final Lock[] locks;
-    private final Random random = new Random();
+    private final AtomicInteger index = new AtomicInteger(0);
     public LimitedResources(int resourcesCount) {
         locks = new Lock[resourcesCount];
         for (int i = 0; i < resourcesCount; ++i) {
@@ -18,8 +18,7 @@ public class LimitedResources {
 
     @SneakyThrows
     public void blockFor(long millis) {
-        var lockNum = random.nextInt(locks.length);
-
+        var lockNum = index.getAndIncrement() % locks.length;
         locks[lockNum].lock();
         try {
             Thread.sleep(millis);
